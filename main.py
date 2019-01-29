@@ -163,7 +163,7 @@ class Downloader():
                 
                 if file_path+file_name == f.name:
                     if (os.path.getsize(file_path+file_name) >> 20 > 50):  #for send large file
-                        call = f"python3.6 /home/vova/WORK/test/echoBot/TelegramSubProcess.py {file_path + file_name}  {str(chat_id)} " \
+                        call = f"python3.6 ./TelegramSubProcess.py {file_path + file_name}  {str(chat_id)} " \
                                 f"{config.BOT_NAME} {utils.clean(track['title'])} {utils.clean(track['artist'])} "      
                         try:
                             event = subprocess.check_call(call,shell=True)
