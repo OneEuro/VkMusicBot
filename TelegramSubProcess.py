@@ -6,17 +6,23 @@ from telethon.tl.types import DocumentAttributeAudio
 import socks
 import config
 from telethon import sync
+import getpass
+from telethon.errors import SessionPasswordNeededError
 
 
 entity = 'VK_Music_Bot' #change to new created bon name
-client = TelegramClient(entity, config.api_id, config.api_hash,proxy=(socks.SOCKS5,'192.99.54.185', 40898)) #update_workers=None,spawn_read_thread=False connection_retries =None
+client = TelegramClient(entity, config.api_id, config.api_hash,proxy=(socks.SOCKS5,'104.238.97.44', 15888)) #update_workers=None,spawn_read_thread=False connection_retries =None
 try:
     client.connect()
 except Exception as e:
                 print(e)
 if not client.is_user_authorized():
-    #client.send_code_request(phone) #при первом запуске - раскомментить, после авторизации для избежания FloodWait советую закомментить
-    client.sign_in(config.phone, input('Enter code: '))
+    # client.send_code_request(config.phone) #при первом запуске - раскомментить, после авторизации для избежания FloodWait советую закомментить
+    client.sign_in(config.phone)
+    try:
+        client.sign_in(code=input('Enter code: '))
+    except SessionPasswordNeededError:
+        client.sign_in(password=getpass.getpass())
 client.start()
 def main(argv):
     file_path = argv[1]

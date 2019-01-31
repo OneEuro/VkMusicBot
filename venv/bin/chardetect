@@ -1,5 +1,4 @@
-#!/home/vova/WORK/test/venv/bin/python3
-
+#!/home/vova/LinuxProjects/VkMusicBot/venv/bin/python3.6
 # -*- coding: utf-8 -*-
 import re
 import sys

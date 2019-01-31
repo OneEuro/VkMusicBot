@@ -232,9 +232,15 @@ class CallbackQuery(EventBuilder):
             `telethon.client.messages.MessageMethods.edit_message` with
             both ``entity`` and ``message`` already set.
 
-            Returns the edited :tl:`Message`.
+            Returns the edited `Message <telethon.tl.custom.message.Message>`.
 
             This method also creates a task to `answer` the callback.
+
+            .. note::
+
+                This method won't respect the previous message unlike
+                `Message.edit <telethon.tl.custom.message.Message.edit>`,
+                since the message object is normally not present.
             """
             self._client.loop.create_task(self.answer())
             return await self._client.edit_message(

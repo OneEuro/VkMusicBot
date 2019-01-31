@@ -98,7 +98,7 @@ class InlineResult:
             return self.result.document
 
     async def click(self, entity, reply_to=None,
-                    silent=False, clear_draft=False):
+                    silent=False, clear_draft=False, hide_via=False):
         """
         Clicks this result and sends the associated `message`.
 
@@ -106,7 +106,7 @@ class InlineResult:
             entity (`entity`):
                 The entity to which the message of this result should be sent.
 
-            reply_to (`int` | :tl:`Message`, optional):
+            reply_to (`int` | `Message <telethon.tl.custom.message.Message>`, optional):
                 If present, the sent message will reply to this ID or message.
 
             silent (`bool`, optional):
@@ -115,6 +115,10 @@ class InlineResult:
             clear_draft (`bool`, optional):
                 Whether the draft should be removed after sending the
                 message from this result or not. Defaults to ``False``.
+            
+            hide_via (`bool`, optional):
+                Whether the "via @bot" should be hidden or not.
+                Only works with certain bots (like @bing or @gif).
         """
         entity = await self._client.get_input_entity(entity)
         reply_id = None if reply_to is None else utils.get_message_id(reply_to)
@@ -124,6 +128,7 @@ class InlineResult:
             id=self.result.id,
             silent=silent,
             clear_draft=clear_draft,
+            hide_via=hide_via,
             reply_to_msg_id=reply_id
         )
         return self._client._get_response_message(

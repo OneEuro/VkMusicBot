@@ -3,7 +3,7 @@
 token = ''
 database_name = './users.db'
 shelve_name = 'shelve.db'
-BOT_NAME = '' #@test_bot
+BOT_NAME = ''
 webhook = ''
 api_id = ''
 api_hash = ''

@@ -1,4 +1,4 @@
-#!/home/vova/WORK/test/venv/bin/python
+#!/home/vova/LinuxProjects/VkMusicBot/venv/bin/python
 
 import sys
 import getopt

@@ -36,7 +36,7 @@ bot = None
 try:
     # bot = AsyncTeleBot(config.token, num_threads=4)
     bot = telebot.TeleBot(config.token,threaded = False) #thread=False чтобы небыло падения бота
-    apihelper.proxy = {'https':'socks5://192.99.54.185:40898'}
+    apihelper.proxy = {'https':'socks5://104.238.97.44:15888'}
 except Exception as e:
     print(e)    
 
@@ -162,7 +162,7 @@ class Downloader():
                 
                 
                 if file_path+file_name == f.name:
-                    if (os.path.getsize(file_path+file_name) >> 20 > 50):  #for send large file
+                    if (os.path.getsize(file_path+file_name) >> 20 >= 50):  #for send large file
                         call = f"python3.6 ./TelegramSubProcess.py {file_path + file_name}  {str(chat_id)} " \
                                 f"{config.BOT_NAME} {utils.clean(track['title'])} {utils.clean(track['artist'])} "      
                         try:
@@ -179,10 +179,12 @@ class Downloader():
                     else:
                         f = open(file_path + file_name,"rb")     
                         try:                           
-                            msg = self.bot.send_audio(chat_id, f, None,None,utils.clean(track['artist']),utils.clean(track['title']))
+                            msg = self.bot.send_audio(chat_id, f, None,None,utils.clean(track['artist']),utils.clean(track['title']),timeout=100)
                             # msg.wait()
                         except Exception as e:
                             print(e)
+                            f.close()
+                            os.remove(file_path+file_name)
                         else:
                             f.close()
                             os.remove(file_path+file_name)
