@@ -15,7 +15,7 @@ pyaes==1.6.1
 pyasn1==0.4.5
 pyTelegramBotAPI==3.6.6
 requests==2.21.0
-rsa==4.0
+rsa==4.1
 six==1.12.0
 soupsieve==1.7.3
 Telethon==1.5.4
