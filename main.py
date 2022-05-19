@@ -1,11 +1,12 @@
+#coding utf8
 import requests
 import time
 import config
 from telebot import AsyncTeleBot,TeleBot,types
 import os
-# import logging
+import logging
 # import traceback
-import SQLighter
+#import SQLighter
 import utils
 import authorization
 from telebot import apihelper
@@ -17,30 +18,32 @@ import telebot
 
 import flask
 from flask import Flask
+from flask_talisman import Talisman
 
-
-from flask_sslify import SSLify
 
 app = Flask(__name__)
-sslify = SSLify(app)
+Talisman(app)
 
 
 # proxies = {'https':'https://194.87.148.222:1080'}
             
-
-
 r = authorization.VKAuth(config.vkLogin,config.vkPassword,None)
 time.sleep(1)
 r.get_response()
 bot = None
-try:
+#try:
     # bot = AsyncTeleBot(config.token, num_threads=4)
-    bot = telebot.TeleBot(config.token,threaded = False) #thread=False чтобы небыло падения бота
-    apihelper.proxy = {'https':'socks5://104.238.97.44:15888'}
-except Exception as e:
-    print(e)    
-
-
+bot = telebot.TeleBot(config.token,threaded = False) #thread=False чтобы небыло падения бота
+bot.polling()
+    # getMe
+    #user = bot.get_me()
+    # setWebhook
+    #bot.remove_webhook()
+    #time.sleep(0.1)
+bot.set_webhook(url="http://127.0.0.1:5000/", certificate=open('cert.pem'))
+    #apihelper.proxy = {'https':'socks5://104.238.97.44:15888'}
+#except Exception as e:
+   # print(e)    
     
 vkaudio = VkAudio(r.get_session())
 
@@ -60,8 +63,9 @@ def webhook():
         flask.abort(403)
 
 
-# logger = telebot.logger
-# telebot.logger.setLevel(logging.DEBUG)
+logger = telebot.logger
+telebot.logger.setLevel(logging.DEBUG)
+ 
 
 @bot.message_handler(commands=['start'])
 def user_defenition(message):
@@ -134,7 +138,7 @@ class Downloader():
         
 # падает с ошибкой - это либо проблема прокси
 # обойти потерю соединения через прокси,возможно не понаобиться если задеплоить на сервере
-    def download_music(self,bot: TeleBot,chat_id=None):
+    def download_music(self,bot,chat_id=None):
 
         self.bot = bot
 
@@ -161,34 +165,34 @@ class Downloader():
                 f.write(ufr.content) #write content in file
                 
                 
-                if file_path+file_name == f.name:
-                    if (os.path.getsize(file_path+file_name) >> 20 >= 50):  #for send large file
-                        call = f"python3.6 ./TelegramSubProcess.py {file_path + file_name}  {str(chat_id)} " \
-                                f"{config.BOT_NAME} {utils.clean(track['title'])} {utils.clean(track['artist'])} "      
-                        try:
-                            event = subprocess.check_call(call,shell=True)
-                        except Exception as e:   
-                            print(e)
-                            os.remove(file_path+file_name)
-                        else:         
-                            if event == 0:
-                                os.remove(file_path+file_name)
-                            else:
-                                print("LOAD FAIL")
-                                
+        if file_path+file_name == f.name:
+            if (os.path.getsize(file_path+file_name) >> 20 >= 50):  #for send large file
+                call = "python3.6 ./TelegramSubProcess.py {file_path + file_name}  {str(chat_id)} "\
+                        "{config.BOT_NAME} {utils.clean(track['title'])} {utils.clean(track['artist'])} "      
+                try:
+                    event = subprocess.check_call(call,shell=True)
+                except Exception as e:   
+                    print(e)
+                    os.remove(file_path+file_name)
+                else:         
+                    if event == 0:
+                        os.remove(file_path+file_name)
                     else:
-                        f = open(file_path + file_name,"rb")     
-                        try:                           
-                            msg = self.bot.send_audio(chat_id, f, None,None,utils.clean(track['artist']),utils.clean(track['title']),timeout=100)
-                            # msg.wait()
-                        except Exception as e:
-                            print(e)
-                            f.close()
-                            os.remove(file_path+file_name)
-                        else:
-                            f.close()
-                            os.remove(file_path+file_name)
-                
+                        print("LOAD FAIL")
+                                
+            else:
+                f = open(file_path + file_name,"rb")     
+                try:                           
+                    msg = self.bot.send_audio(chat_id, f, None,None,utils.clean(track['artist']),utils.clean(track['title']),timeout=100)
+                    # msg.wait()
+                except Exception as e:
+                    print(e)
+                    f.close()
+                    os.remove(file_path+file_name)
+                else:
+                    f.close()
+                    os.remove(file_path+file_name)
+        
 
 
         f = open(config.notDownloaded,"rb")  
@@ -214,7 +218,7 @@ def telegram_polling():
         # telegram_polling()
 
 if __name__ == '__main__':   
-    app.run()
-    # telegram_polling()
+    app.run(host='127.0.0.1',port=5000,debug=True,ssl_context=(config.WEBHOOK_SSL_CERT, config.WEBHOOK_SSL_PRIV)) #('cert.pem', 'key.pem')
+    telegram_polling()
     # DM = vkaudio.get(vk_id)
     # download_music(DM)

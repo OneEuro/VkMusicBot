@@ -1,0 +1,10 @@
+# Игнорировать файлы vscode
+.vscode
+# Игнорировать файлы DS_Store
+.DS_Store
+# Игнорировать файлы __pycache__
+/__pycache__
+# Игнорировать файлы python3.6
+/venv/lib/python3.6
+# Игнорировать файлы python3.9
+/venv/lib/python3.9
